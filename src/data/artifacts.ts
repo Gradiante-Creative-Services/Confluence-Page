@@ -8,7 +8,6 @@ export const artifactCards: ArtifactCard[] = [
     folder: 'docs',
     color: 'var(--accent-string)',
     desc: 'Scope, objectives, and success metrics for the 10-session program.',
-    owner: 'Sunil Soni',
     status: 'Final',
   },
   {
@@ -18,7 +17,6 @@ export const artifactCards: ArtifactCard[] = [
     folder: 'docs',
     color: 'var(--accent-keyword)',
     desc: 'Lab environment design, reference builds, and the RAG + MCP setup used in exercises.',
-    owner: 'Sunil Soni',
     status: 'Final',
   },
 ]

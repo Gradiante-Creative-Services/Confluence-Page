@@ -30,7 +30,6 @@ export function ArtifactCard({ card }: ArtifactCardProps) {
         <p className="card-desc">{card.desc}</p>
         <div className="contents-empty">empty — upload coming soon</div>
         <div className="card-meta">
-          <span className="card-owner">{card.owner}</span>
           <span className="chip">{card.status}</span>
         </div>
       </div>

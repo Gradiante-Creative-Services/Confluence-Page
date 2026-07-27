@@ -7,7 +7,6 @@ export interface ArtifactCard {
   folder: ArtifactFolder
   color: string
   desc: string
-  owner: string
   status: string
 }
 
