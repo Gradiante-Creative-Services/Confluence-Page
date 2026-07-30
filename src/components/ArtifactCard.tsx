@@ -21,14 +21,18 @@ export function ArtifactCard({ card }: ArtifactCardProps) {
       <div className="card-tab">
         <span className="folder-icon">{folderIcon}</span>
         <span className="card-name">{card.name}</span>
-        <span className="item-count">0</span>
+        <span className="item-count">{card.fileCount}</span>
       </div>
 
       <div className="card-path">{card.path}</div>
 
       <div className="card-body">
         <p className="card-desc">{card.desc}</p>
-        <div className="contents-empty">empty — upload coming soon</div>
+        {card.fileCount === 0 ? (
+          <div className="contents-empty">empty</div>
+        ) : (
+          <div className="contents-empty">{card.fileCount} file{card.fileCount === 1 ? '' : 's'}</div>
+        )}
         <div className="card-meta">
           <span className="chip">{card.status}</span>
         </div>

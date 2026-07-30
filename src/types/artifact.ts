@@ -8,6 +8,7 @@ export interface ArtifactCard {
   color: string
   desc: string
   status: string
+  fileCount: number
 }
 
 export type SidebarFilter = 'all' | ArtifactFolder

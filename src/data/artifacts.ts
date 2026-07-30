@@ -1,26 +1,3 @@
-import type { ArtifactCard } from '../types/artifact'
-
-export const artifactCards: ArtifactCard[] = [
-  {
-    id: 'brd',
-    name: 'BRD',
-    path: 'docs/BRD/',
-    folder: 'docs',
-    color: 'var(--accent-string)',
-    desc: 'Scope, objectives, and success metrics for the 10-session program.',
-    status: 'Final',
-  },
-  {
-    id: 'arch',
-    name: 'Architecture',
-    path: 'docs/architecture/',
-    folder: 'docs',
-    color: 'var(--accent-keyword)',
-    desc: 'Lab environment design, reference builds, and the RAG + MCP setup used in exercises.',
-    status: 'Final',
-  },
-]
-
 export const sessionDates = [
   'Mon Jul 27',
   'Tue Jul 28',

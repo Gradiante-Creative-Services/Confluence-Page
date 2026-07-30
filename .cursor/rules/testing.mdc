@@ -1,0 +1,12 @@
+---
+description: Completion checklist before marking any task done
+alwaysApply: true
+---
+
+# Done means verified
+
+Before marking any task complete:
+1. Run npm run build — fix all TypeScript errors
+2. If you changed validation or API code, run tests if they exist
+3. Summarize files changed and how to manually verify in the browser
+4. Do not leave console.log debug statements in committed code
