@@ -1,14 +1,19 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { fetchArtifacts, fetchFolders } from '../api/client'
-import type { ApiArtifact } from '../api/client'
-import type { ArtifactCard } from '../types/artifact'
-import { ArtifactCard as ArtifactCardView } from './ArtifactCard'
-import { Sidebar } from './Sidebar'
-import { StatusBar } from './StatusBar'
-import { StatusCard } from './StatusCard'
-import { TitleBar } from './TitleBar'
-import { UploadButton } from './UploadButton'
-import type { SidebarFilter } from '../types/artifact'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { fetchArtifacts, fetchFolders } from '@/api/client'
+import type { ApiArtifact } from '@/api/client'
+import type { ArtifactCard } from '@/types/artifact'
+import type { SidebarFilter } from '@/types/artifact'
+import { useAuth } from '@/context/AuthContext'
+import { ArtifactCard as ArtifactCardView } from '@/components/ArtifactCard'
+import { HubAppSidebar } from '@/components/app-sidebar'
+import { HubSiteHeader } from '@/components/site-header'
+import { StatusBar } from '@/components/StatusBar'
+import { StatusCard } from '@/components/StatusCard'
+import { UploadButton } from '@/components/UploadButton'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Skeleton } from '@/components/ui/skeleton'
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+
 function mapArtifact(artifact: ApiArtifact): ArtifactCard {
   return {
     id: artifact.id,
@@ -22,8 +27,20 @@ function mapArtifact(artifact: ApiArtifact): ArtifactCard {
   }
 }
 
+function getInitials(displayName: string | null, email: string): string {
+  if (displayName) {
+    const parts = displayName.trim().split(/\s+/).filter(Boolean)
+    if (parts.length >= 2) {
+      return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
+    }
+    return parts[0]?.slice(0, 2).toUpperCase() ?? '?'
+  }
+  return email.slice(0, 2).toUpperCase()
+}
+
 export function ArtifactHub() {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const { user, logout } = useAuth()
+  const searchInputRef = useRef<HTMLInputElement>(null)
   const [activeFilter, setActiveFilter] = useState<SidebarFilter>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [artifacts, setArtifacts] = useState<ArtifactCard[]>([])
@@ -74,6 +91,7 @@ export function ArtifactHub() {
   useEffect(() => {
     void loadData()
   }, [loadData])
+
   const visibleCards = useMemo(() => {
     const query = searchQuery.trim().toLowerCase()
 
@@ -90,62 +108,71 @@ export function ArtifactHub() {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== '/' || event.target instanceof HTMLInputElement) return
       event.preventDefault()
-      document.querySelector<HTMLInputElement>('.searchwrap input')?.focus()
+      searchInputRef.current?.focus()
     }
 
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [])
 
+  const displayName = user?.displayName ?? user?.email.split('@')[0] ?? 'User'
+  const email = user?.email ?? ''
+
   return (
-    <>
-      <TitleBar
-        sidebarCollapsed={sidebarCollapsed}
-        onToggleSidebar={() => setSidebarCollapsed((value) => !value)}
+    <SidebarProvider>
+      <HubSiteHeader
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        searchInputRef={searchInputRef}
+        displayName={displayName}
+        email={email}
+        initials={getInitials(user?.displayName ?? null, email)}
+        onLogout={logout}
       />
-
-      <div className="shell">
-        <Sidebar
-          collapsed={sidebarCollapsed}
+      <div className="flex flex-1">
+        <HubAppSidebar
           activeFilter={activeFilter}
           folderCounts={folderCounts}
           onFilterChange={setActiveFilter}
         />
-
-        <main>
-          <div className="page-head">
-            <div className="page-head-row">
-              <h1>artifact-hub</h1>
+        <SidebarInset>
+          <div className="flex flex-1 flex-col gap-6 p-6 pb-16">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight">artifact-hub</h1>
+                <p className="text-sm text-muted-foreground">
+                  Program deliverables for the AI for Developers cohort. Upload files to the
+                  Inbox — auto-assignment based on content is coming next.
+                </p>
+              </div>
               <UploadButton onUploaded={() => void loadData()} />
             </div>
-            <p>
-              Program deliverables for the AI for Developers cohort. Upload files here — they land
-              in the Inbox and will be auto-assigned to folders based on content later.
-            </p>
+
+            <StatusCard />
+
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {isLoading ? (
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <Skeleton key={index} className="h-48 w-full rounded-xl" />
+                ))}
+              </div>
+            ) : (
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {visibleCards.map((card) => (
+                  <ArtifactCardView key={card.id} card={card} />
+                ))}
+              </div>
+            )}
           </div>
-          <StatusCard />
-
-          {error && (
-            <p className="form-error form-error-general hub-error" role="alert">
-              {error}
-            </p>
-          )}
-
-          {isLoading ? (
-            <p className="hub-loading">Loading artifacts…</p>
-          ) : (
-            <div className="grid">
-              {visibleCards.map((card) => (
-                <ArtifactCardView key={card.id} card={card} />
-              ))}
-            </div>
-          )}
-        </main>
+        </SidebarInset>
       </div>
-
       <StatusBar visibleCount={visibleCards.length} />
-    </>
+    </SidebarProvider>
   )
 }

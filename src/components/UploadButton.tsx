@@ -1,5 +1,8 @@
 import { useRef, useState } from 'react'
-import { ApiError, uploadArtifactFiles, type UploadedFile } from '../api/client'
+import { ApiError, uploadArtifactFiles, type UploadedFile } from '@/api/client'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { UploadIcon } from 'lucide-react'
 
 interface UploadButtonProps {
   onUploaded: (files: UploadedFile[]) => void
@@ -36,37 +39,28 @@ export function UploadButton({ onUploaded }: UploadButtonProps) {
   }
 
   return (
-    <div className="upload-control">
+    <div className="flex flex-col items-end gap-2">
       <input
         ref={inputRef}
         type="file"
         multiple
-        className="upload-input"
+        className="sr-only"
         aria-label="Choose files to upload"
         onChange={(event) => void handleFiles(event.target.files)}
       />
-      <button
-        type="button"
-        className="btn-upload"
-        disabled={isUploading}
-        onClick={() => inputRef.current?.click()}
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-          <polyline points="17 8 12 3 7 8" />
-          <line x1="12" y1="3" x2="12" y2="15" />
-        </svg>
+      <Button disabled={isUploading} onClick={() => inputRef.current?.click()}>
+        <UploadIcon data-icon="inline-start" />
         {isUploading ? 'Uploading…' : 'Upload files'}
-      </button>
+      </Button>
       {message && (
-        <p className="upload-status upload-status-success" role="status">
-          {message}
-        </p>
+        <Alert className="max-w-sm py-2">
+          <AlertDescription>{message}</AlertDescription>
+        </Alert>
       )}
       {error && (
-        <p className="upload-status upload-status-error" role="alert">
-          {error}
-        </p>
+        <Alert variant="destructive" className="max-w-sm py-2">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
     </div>
   )

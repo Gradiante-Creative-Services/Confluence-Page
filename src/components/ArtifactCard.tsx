@@ -1,10 +1,14 @@
-import type { ArtifactCard as ArtifactCardType } from '../types/artifact'
-
-const folderIcon = (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
-  </svg>
-)
+import type { ArtifactCard as ArtifactCardType } from '@/types/artifact'
+import { Badge } from '@/components/ui/badge'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { FolderIcon } from 'lucide-react'
 
 interface ArtifactCardProps {
   card: ArtifactCardType
@@ -12,31 +16,28 @@ interface ArtifactCardProps {
 
 export function ArtifactCard({ card }: ArtifactCardProps) {
   return (
-    <article
-      className="card"
-      data-folder={card.folder}
-      data-id={card.id}
-      style={{ '--card-color': card.color } as React.CSSProperties}
-    >
-      <div className="card-tab">
-        <span className="folder-icon">{folderIcon}</span>
-        <span className="card-name">{card.name}</span>
-        <span className="item-count">{card.fileCount}</span>
-      </div>
-
-      <div className="card-path">{card.path}</div>
-
-      <div className="card-body">
-        <p className="card-desc">{card.desc}</p>
-        {card.fileCount === 0 ? (
-          <div className="contents-empty">empty</div>
-        ) : (
-          <div className="contents-empty">{card.fileCount} file{card.fileCount === 1 ? '' : 's'}</div>
-        )}
-        <div className="card-meta">
-          <span className="chip">{card.status}</span>
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <FolderIcon className="size-4 text-muted-foreground" />
+            <CardTitle>{card.name}</CardTitle>
+          </div>
+          <Badge variant="secondary">{card.fileCount}</Badge>
         </div>
-      </div>
-    </article>
+        <CardDescription>{card.path}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-muted-foreground">{card.desc}</p>
+        <p className="mt-3 text-xs text-muted-foreground">
+          {card.fileCount === 0
+            ? 'No files yet'
+            : `${card.fileCount} file${card.fileCount === 1 ? '' : 's'}`}
+        </p>
+      </CardContent>
+      <CardFooter>
+        <Badge variant="outline">{card.status}</Badge>
+      </CardFooter>
+    </Card>
   )
 }
