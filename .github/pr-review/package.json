@@ -1,0 +1,11 @@
+{
+  "name": "gemini-pr-review",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Self-contained Gemini PR review script for GitHub Actions",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@octokit/rest": "^21.1.1"
+  }
+}
