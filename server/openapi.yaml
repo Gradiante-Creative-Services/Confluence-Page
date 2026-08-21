@@ -1,0 +1,244 @@
+openapi: 3.1.0
+info:
+  title: Confluence Page API
+  version: 1.0.0
+servers:
+  - url: /api/v1
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: API and database are reachable
+        '503':
+          description: Database unavailable
+  /auth/login:
+    post:
+      summary: Sign in
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '200': { description: Session token issued }
+        '400': { description: Validation failed }
+        '401': { description: Invalid credentials }
+        '429': { description: Rate limited }
+  /auth/signup:
+    post:
+      summary: Create a member account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '201': { description: Account created and session token issued }
+        '400': { description: Validation failed }
+        '409': { description: Email already registered }
+        '429': { description: Rate limited }
+  /auth/me:
+    get:
+      summary: Current user
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: Authenticated user }
+        '401': { description: Missing or invalid token }
+  /auth/logout:
+    post:
+      summary: Sign out (client discards token)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '204': { description: Logged out }
+        '401': { description: Missing or invalid token }
+  /users:
+    get:
+      summary: List users (admin)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: Paginated users }
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden }
+  /users/{id}:
+    get:
+      summary: Get user (admin)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: User }
+        '403': { description: Forbidden }
+        '404': { description: Not found }
+  /artifacts:
+    get:
+      summary: List artifacts
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: folder
+          schema: { type: string, enum: [docs, tests, ops, tools, comms] }
+        - in: query
+          name: status
+          schema: { type: string, enum: [draft, in_review, final] }
+        - in: query
+          name: q
+          schema: { type: string }
+        - in: query
+          name: page
+          schema: { type: integer }
+        - in: query
+          name: per_page
+          schema: { type: integer }
+        - in: query
+          name: sort
+          schema: { type: string }
+      responses:
+        '200': { description: Paginated artifacts }
+    post:
+      summary: Create artifact (admin)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '201': { description: Created }
+        '409': { description: Duplicate slug or path }
+        '422': { description: Validation failed }
+  /artifacts/{id}:
+    get:
+      summary: Get artifact with files
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Artifact detail }
+        '404': { description: Not found }
+    patch:
+      summary: Update artifact (admin)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Updated }
+        '404': { description: Not found }
+        '409': { description: Duplicate slug or path }
+    delete:
+      summary: Delete artifact (admin)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '204': { description: Deleted }
+        '404': { description: Not found }
+  /artifacts/{id}/files:
+    get:
+      summary: List files
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Paginated files }
+        '404': { description: Artifact not found }
+    post:
+      summary: Upload a file
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: { type: string, format: binary }
+      responses:
+        '201': { description: Uploaded }
+        '413': { description: File too large }
+        '422': { description: Type not allowed }
+  /artifacts/{id}/files/{fileId}:
+    get:
+      summary: Get file metadata
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: fileId
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: File metadata }
+        '404': { description: Not found }
+    delete:
+      summary: Delete file (owner or admin)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: fileId
+          required: true
+          schema: { type: string }
+      responses:
+        '204': { description: Deleted }
+        '403': { description: Forbidden }
+        '404': { description: Not found }
+  /artifacts/{id}/files/{fileId}/download:
+    get:
+      summary: Download file bytes
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+        - in: path
+          name: fileId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: File stream
+          content:
+            application/octet-stream:
+              schema: { type: string, format: binary }
+        '404': { description: Not found }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

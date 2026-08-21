@@ -1,0 +1,16 @@
+---
+description: Backend compile check after Express/SQLite API changes
+globs: server/**/*.ts
+alwaysApply: false
+---
+
+# Backend
+
+The API lives in `server/` (Express 5 + better-sqlite3, versioned at `/api/v1`). The frontend never imports from `server/`. Root `npm run build` typechecks `src/` only — it does **not** compile the backend.
+
+## After any backend change
+
+If any file under `server/` was edited (routes, services, repositories, middleware, migrations, seeds, tests, or config), run a TypeScript compile check before considering the work done:
+
+```bash
+npx tsc --noEmit -p server/tsconfig.json

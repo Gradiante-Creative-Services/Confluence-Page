@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "command": "node .cursor/hooks/protect-dotenv.js",
+        "matcher": "Write|StrReplace|Delete|EditNotebook|Edit"
+      }
+    ]
+  }
+}

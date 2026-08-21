@@ -1,3 +1,6 @@
+import { BrandMark } from './BrandMark'
+import { useAuth } from '../auth/AuthContext'
+
 interface TitleBarProps {
   sidebarCollapsed: boolean
   onToggleSidebar: () => void
@@ -11,6 +14,8 @@ export function TitleBar({
   searchQuery,
   onSearchChange,
 }: TitleBarProps) {
+  const { logout } = useAuth()
+
   return (
     <div className="titlebar">
       <button
@@ -27,32 +32,33 @@ export function TitleBar({
       </button>
 
       <div className="brand">
-        <span className="brand-text">ThoughtFocus</span>
-        <div className="brand-div" />
-        <div className="dots">
-          <span className="d1" />
-          <span className="d2" />
-          <span className="d3" />
-        </div>
+        <BrandMark size="sm" />
       </div>
 
       <div className="breadcrumb">
-        thoughtfocus-ai4dev / <b>artifact-hub</b>
+        thoughtfocus-ai4dev / <b>Confluence Page</b>
       </div>
 
-      <div className="searchwrap">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="11" cy="11" r="7" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
-        <input
-          type="text"
-          placeholder="Go to folder…"
-          autoComplete="off"
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-        />
-        <span className="kbd">/</span>
+      <div className="titlebar-end">
+        <div className="searchwrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="7" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Go to folder…"
+            aria-label="Search artifacts"
+            autoComplete="off"
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+          />
+          <span className="kbd">/</span>
+        </div>
+
+        <button type="button" className="titlebar-signout" onClick={logout}>
+          Sign out
+        </button>
       </div>
 
       {sidebarCollapsed && <span className="sr-only">Sidebar collapsed</span>}

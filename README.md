@@ -1,32 +1,49 @@
-# React + TypeScript + Vite
+# Confluence Page
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+ThoughtFocus AI for Developers hub: a Vite + React UI backed by an Express + SQLite API.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+This starts the API on `http://localhost:3001` and the Vite app with `/api` proxied to it. The first boot migrates SQLite and seeds demo data into `data/` (gitignored).
+
+Optional:
+
+```bash
+cp .env.example .env
+npm run db:migrate
+npm run db:seed
+```
+
+## Demo accounts
+
+Passwords are not shown in the login UI.
+
+- Admin: `admin@thoughtfocus.com` / `Admin123!`
+- Member: `member@thoughtfocus.com` / `Member123!`
+
+Admin can create artifacts. Both roles can read artifacts and upload files.
+
+## Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `npm run dev` | API + Vite together |
+| `npm run dev:server` | Express only |
+| `npm run dev:web` | Vite only |
+| `npm run db:migrate` | Apply SQL migrations |
+| `npm run db:seed` | Idempotent demo users, BRD, Architecture, sample files |
+| `npm test` | Frontend Vitest |
+| `npm run test:server` | API + SQLite tests |
+| `npm run test:smoke` | Login → create → upload → download → delete |
+| `npm run test:all` | Frontend + server tests |
+
+## API
+
+Versioned at `/api/v1`. Contract: [server/openapi.yaml](server/openapi.yaml).
+
+Auth uses a signed JWT in `Authorization: Bearer <token>`. Artifact files live on disk under `data/uploads/` with metadata in SQLite.

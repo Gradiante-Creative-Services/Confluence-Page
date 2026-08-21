@@ -1,0 +1,25 @@
+---
+description: React and TypeScript conventions for artifact-hub UI components
+globs:
+  - src/components/**
+  - src/App.tsx
+  - src/context/**
+alwaysApply: false
+---
+
+# Frontend rules — artifact-hub
+
+Always:
+- Use functional components with explicit TypeScript props interfaces
+- Reuse existing CSS classes from src/index.css — do NOT add Tailwind or new CSS frameworks
+- Use CSS variables already defined (:root tokens like --bg-panel, --accent-function)
+- Keep data fetching in src/api/client.ts — components call api helpers, never raw fetch() inline
+- Use useAuth() from AuthContext for auth state — do not duplicate token logic in components
+- Reuse validation from src/utils/validation.ts for form fields
+- Preserve accessibility: aria-invalid, aria-describedby, role="alert" on form errors
+- Match existing component patterns (LoginScreen, ArtifactHub, TitleBar)
+
+Never:
+- Introduce styled-components, MUI, or shadcn unless explicitly asked
+- Store auth tokens outside src/api/client.ts helpers
+- Hardcode artifact card data in components — use src/data/artifacts.ts or API types

@@ -1,4 +1,6 @@
-import type { ArtifactCard as ArtifactCardType } from '../types/artifact'
+import type { CSSProperties } from 'react'
+import type { ArtifactSummary } from '../api/types'
+import { FOLDER_COLORS, STATUS_LABELS } from '../api/types'
 
 const folderIcon = (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -7,32 +9,45 @@ const folderIcon = (
 )
 
 interface ArtifactCardProps {
-  card: ArtifactCardType
+  artifact: ArtifactSummary
+  selected: boolean
+  onSelect: (id: string) => void
 }
 
-export function ArtifactCard({ card }: ArtifactCardProps) {
+export function ArtifactCard({ artifact, selected, onSelect }: ArtifactCardProps) {
   return (
     <article
-      className="card"
-      data-folder={card.folder}
-      data-id={card.id}
-      style={{ '--card-color': card.color } as React.CSSProperties}
+      className={`card${selected ? ' selected' : ''}`}
+      data-folder={artifact.folder}
+      data-id={artifact.id}
+      style={{ '--card-color': FOLDER_COLORS[artifact.folder] } as CSSProperties}
     >
-      <div className="card-tab">
-        <span className="folder-icon">{folderIcon}</span>
-        <span className="card-name">{card.name}</span>
-        <span className="item-count">0</span>
-      </div>
-
-      <div className="card-path">{card.path}</div>
-
-      <div className="card-body">
-        <p className="card-desc">{card.desc}</p>
-        <div className="contents-empty">empty — upload coming soon</div>
-        <div className="card-meta">
-          <span className="chip">{card.status}</span>
+      <button
+        type="button"
+        className="card-button"
+        onClick={() => onSelect(artifact.id)}
+        aria-pressed={selected}
+      >
+        <div className="card-tab">
+          <span className="folder-icon">{folderIcon}</span>
+          <span className="card-name">{artifact.name}</span>
+          <span className="item-count">{artifact.fileCount}</span>
         </div>
-      </div>
+
+        <div className="card-path">{artifact.path}</div>
+
+        <div className="card-body">
+          <p className="card-desc">{artifact.description}</p>
+          <div className={artifact.fileCount === 0 ? 'contents-empty' : 'contents-count'}>
+            {artifact.fileCount === 0
+              ? 'empty — upload a file to get started'
+              : `${artifact.fileCount} file${artifact.fileCount === 1 ? '' : 's'}`}
+          </div>
+          <div className="card-meta">
+            <span className="chip">{STATUS_LABELS[artifact.status]}</span>
+          </div>
+        </div>
+      </button>
     </article>
   )
 }
