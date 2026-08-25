@@ -1,7 +1,11 @@
 import { useState, type FormEvent } from 'react'
+import { LogIn } from 'lucide-react'
 import { useAuth } from '../auth/AuthContext'
 import { validateEmail, validatePassword } from '../auth/validation'
 import { BrandMark } from './BrandMark'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 interface LoginScreenProps {
   onSwitchToSignup: () => void
@@ -47,9 +51,14 @@ export function LoginScreen({ onSwitchToSignup }: LoginScreenProps) {
     <div className="login-page">
       <div className="login-card">
         <div className="login-header">
+          <div className="login-window-dots" aria-hidden="true">
+            <span className="login-window-dot login-window-dot-close" />
+            <span className="login-window-dot login-window-dot-min" />
+            <span className="login-window-dot login-window-dot-max" />
+          </div>
           <BrandMark size="md" />
           <p className="login-breadcrumb">
-            Confluence Page / <b>login</b>
+            thoughtfocus-ai4dev / <b>login</b>
           </p>
         </div>
 
@@ -67,8 +76,8 @@ export function LoginScreen({ onSwitchToSignup }: LoginScreenProps) {
             )}
 
             <div className="form-field">
-              <label htmlFor="email">Email</label>
-              <input
+              <Label htmlFor="email">Email</Label>
+              <Input
                 id="email"
                 className="form-input"
                 type="email"
@@ -92,8 +101,8 @@ export function LoginScreen({ onSwitchToSignup }: LoginScreenProps) {
             </div>
 
             <div className="form-field">
-              <label htmlFor="password">Password</label>
-              <input
+              <Label htmlFor="password">Password</Label>
+              <Input
                 id="password"
                 className="form-input"
                 type="password"
@@ -116,16 +125,22 @@ export function LoginScreen({ onSwitchToSignup }: LoginScreenProps) {
               )}
             </div>
 
-            <button type="submit" className="btn-primary" disabled={pending}>
+            <Button type="submit" className="btn-primary w-full" disabled={pending}>
               {pending ? 'Signing in…' : 'Sign in'}
-            </button>
+              {!pending && <LogIn data-icon="inline-end" />}
+            </Button>
           </form>
 
           <p className="login-switch">
             Don&apos;t have an account?{' '}
-            <button type="button" className="login-switch-link" onClick={onSwitchToSignup}>
-              Create one
-            </button>
+            <Button
+              type="button"
+              variant="link"
+              className="login-switch-link h-auto px-0"
+              onClick={onSwitchToSignup}
+            >
+              Create account
+            </Button>
           </p>
         </div>
       </div>

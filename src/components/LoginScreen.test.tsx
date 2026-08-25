@@ -24,6 +24,7 @@ describe('LoginScreen', () => {
     renderLogin()
 
     expect(screen.getByRole('img', { name: 'ThoughtFocus' })).toBeInTheDocument()
+    expect(screen.getByText(/thoughtfocus-ai4dev/i)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /sign in/i })).toBeInTheDocument()
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
@@ -85,7 +86,7 @@ describe('LoginScreen', () => {
       </AuthProvider>,
     )
 
-    await user.click(screen.getByRole('button', { name: /create one/i }))
+    await user.click(screen.getByRole('button', { name: /create account/i }))
 
     expect(onSwitchToSignup).toHaveBeenCalledTimes(1)
   })

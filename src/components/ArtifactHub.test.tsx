@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 import '@testing-library/jest-dom/vitest'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AuthProvider } from '../auth/AuthContext'
 import App from '../App'
@@ -65,5 +65,47 @@ describe('ArtifactHub data flow', () => {
     expect(await screen.findByRole('heading', { name: 'BRD' })).toBeInTheDocument()
     expect(await screen.findByText('scope.md')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /download/i })).toBeInTheDocument()
+  })
+
+  it('renders RACI and Blog cards with seeded paths', async () => {
+    stubConfluenceApi()
+    await signInAsAdmin()
+
+    const raci = screen.getByText('RACI').closest('article')
+    expect(raci).not.toBeNull()
+    expect(raci).toHaveTextContent('docs/RACI/')
+
+    const blog = screen.getByText('Blog').closest('article')
+    expect(blog).not.toBeNull()
+    expect(blog).toHaveTextContent('comms/blog/')
+  })
+
+  it('filters docs and comms folders for RACI and Blog', async () => {
+    stubConfluenceApi()
+    const user = await signInAsAdmin()
+
+    await user.click(screen.getByTitle('docs/'))
+    await waitFor(() => {
+      expect(screen.queryByText('Blog')).not.toBeInTheDocument()
+    })
+    expect(screen.getByText('RACI')).toBeInTheDocument()
+    expect(screen.getByText('BRD')).toBeInTheDocument()
+
+    await user.click(screen.getByTitle('comms/'))
+    await waitFor(() => {
+      expect(screen.queryByText('RACI')).not.toBeInTheDocument()
+    })
+    expect(screen.getByText('Blog')).toBeInTheDocument()
+    expect(screen.queryByText('BRD')).not.toBeInTheDocument()
+  })
+
+  it('shows panel upload affordance when opening RACI with uploads:create', async () => {
+    stubConfluenceApi()
+    const user = await signInAsAdmin()
+
+    await user.click(screen.getByRole('button', { name: /RACI/i }))
+    expect(await screen.findByRole('heading', { name: 'RACI' })).toBeInTheDocument()
+    expect(await screen.findByText('matrix.md')).toBeInTheDocument()
+    expect(screen.getByLabelText(/upload file/i)).toBeInTheDocument()
   })
 })

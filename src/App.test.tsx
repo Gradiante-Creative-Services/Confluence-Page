@@ -96,7 +96,7 @@ describe('App auth gate', () => {
     renderApp()
     const user = userEvent.setup()
 
-    await user.click(screen.getByRole('button', { name: /create one/i }))
+    await user.click(screen.getByRole('button', { name: /create account/i }))
 
     expect(screen.getByRole('heading', { name: /sign up/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /create account/i })).toBeInTheDocument()
@@ -107,7 +107,7 @@ describe('App auth gate', () => {
     renderApp()
     const user = userEvent.setup()
 
-    await user.click(screen.getByRole('button', { name: /create one/i }))
+    await user.click(screen.getByRole('button', { name: /create account/i }))
     await user.type(screen.getByLabelText(/email/i), 'ada@thoughtfocus.com')
     await user.type(screen.getByLabelText(/password/i), 'Password1')
     await user.click(screen.getByRole('button', { name: /create account/i }))

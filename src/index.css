@@ -22,6 +22,7 @@
   --accent-neutral: #9aa1ad;
   --brand-green: #84a66b;
   --brand-mint: #e8f2e8;
+  --window-dot-min: #f0c868;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
   --sidebar-w: 230px;
@@ -688,12 +689,43 @@ main {
 }
 
 .login-header {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 22px 22px 16px;
+  padding: 36px 22px 16px;
   border-bottom: 1px solid var(--border);
   background: var(--bg-inset);
+}
+
+.login-window-dots {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.login-window-dot {
+  display: block;
+  width: 11px;
+  height: 11px;
+  border: 0;
+  outline: none;
+  border-radius: 50%;
+}
+
+.login-window-dot-close {
+  background: var(--accent-danger);
+}
+
+.login-window-dot-min {
+  background: var(--window-dot-min);
+}
+
+.login-window-dot-max {
+  background: var(--accent-success);
 }
 
 .login-breadcrumb {
@@ -735,6 +767,15 @@ main {
   gap: 16px;
 }
 
+.login-form [data-slot='input'] {
+  height: 44px;
+  min-height: 44px;
+}
+
+.login-form [data-slot='input']:focus-visible {
+  box-shadow: none;
+}
+
 .login-switch {
   margin: 16px 0 0;
   text-align: center;
@@ -745,6 +786,8 @@ main {
 .login-switch-link {
   background: none;
   border: none;
+  height: auto;
+  min-height: 0;
   padding: 0;
   color: var(--brand-mint);
   font-family: inherit;

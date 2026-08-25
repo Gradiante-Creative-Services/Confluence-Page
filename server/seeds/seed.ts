@@ -11,6 +11,8 @@ export const SEED_ADMIN_ID = '11111111-1111-1111-1111-111111111111'
 export const SEED_MEMBER_ID = '22222222-2222-2222-2222-222222222222'
 export const SEED_BRD_ID = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
 export const SEED_ARCH_ID = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb'
+export const SEED_RACI_ID = 'cccccccc-cccc-cccc-cccc-cccccccccccc'
+export const SEED_BLOG_ID = 'dddddddd-dddd-dddd-dddd-dddddddddddd'
 
 const ADMIN_PASSWORD_HASH = bcrypt.hashSync('Admin123!', 6) // demo admin password
 const MEMBER_PASSWORD_HASH = bcrypt.hashSync('Member123!', 6) // demo member password
@@ -23,6 +25,16 @@ Scope, objectives, and success metrics for the 10-session AI for Developers prog
 const ARCH_MARKDOWN = `# Architecture
 
 Lab environment design, reference builds, and the RAG + MCP setup used in exercises.
+`
+
+const RACI_MARKDOWN = `# RACI
+
+Roles and responsibilities across the AI for Developers program — Responsible, Accountable, Consulted, Informed.
+`
+
+const BLOG_MARKDOWN = `# Blog
+
+Cohort updates, session recaps, and shared learning notes from the AI for Developers program.
 `
 
 export function seedDatabase(db: SqliteDatabase, uploadDir: string): void {
@@ -83,8 +95,39 @@ export function seedDatabase(db: SqliteDatabase, uploadDir: string): void {
     updatedAt: now,
   })
 
+  artifacts.upsertBySlug({
+    id: SEED_RACI_ID,
+    slug: 'raci',
+    name: 'RACI',
+    folder: 'docs',
+    path: 'docs/RACI/',
+    description:
+      'Roles and responsibilities across the program — Responsible, Accountable, Consulted, Informed.',
+    status: 'in_review',
+    createdBy: SEED_ADMIN_ID,
+    updatedBy: SEED_ADMIN_ID,
+    createdAt: now,
+    updatedAt: now,
+  })
+
+  artifacts.upsertBySlug({
+    id: SEED_BLOG_ID,
+    slug: 'blog',
+    name: 'Blog',
+    folder: 'comms',
+    path: 'comms/blog/',
+    description: 'Cohort updates, session recaps, and shared learning notes.',
+    status: 'draft',
+    createdBy: SEED_ADMIN_ID,
+    updatedBy: SEED_ADMIN_ID,
+    createdAt: now,
+    updatedAt: now,
+  })
+
   fileService.writeSeedFile(SEED_BRD_ID, 'scope.md', BRD_MARKDOWN, SEED_ADMIN_ID)
   fileService.writeSeedFile(SEED_ARCH_ID, 'overview.md', ARCH_MARKDOWN, SEED_ADMIN_ID)
+  fileService.writeSeedFile(SEED_RACI_ID, 'matrix.md', RACI_MARKDOWN, SEED_ADMIN_ID)
+  fileService.writeSeedFile(SEED_BLOG_ID, 'intro.md', BLOG_MARKDOWN, SEED_ADMIN_ID)
 }
 
 export function runSeedCli(): void {

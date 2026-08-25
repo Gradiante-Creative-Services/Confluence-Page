@@ -19,6 +19,8 @@ npm run db:migrate
 npm run db:seed
 ```
 
+Existing local databases only get new seed artifacts when you re-run `npm run db:seed` (idempotent), or wipe `data/` and restart so first boot seeds again.
+
 ## Demo accounts
 
 Passwords are not shown in the login UI.
@@ -28,6 +30,10 @@ Passwords are not shown in the login UI.
 
 Admin can create artifacts. Both roles can read artifacts and upload files.
 
+## Demo artifacts
+
+Seeded hub cards (with sample files): BRD, Architecture, RACI (`docs/RACI/`), and Blog (`comms/blog/`).
+
 ## Scripts
 
 | Script | Purpose |
@@ -36,7 +42,7 @@ Admin can create artifacts. Both roles can read artifacts and upload files.
 | `npm run dev:server` | Express only |
 | `npm run dev:web` | Vite only |
 | `npm run db:migrate` | Apply SQL migrations |
-| `npm run db:seed` | Idempotent demo users, BRD, Architecture, sample files |
+| `npm run db:seed` | Idempotent demo users, BRD, Architecture, RACI, Blog, sample files |
 | `npm test` | Frontend Vitest |
 | `npm run test:server` | API + SQLite tests |
 | `npm run test:smoke` | Login → create → upload → download → delete |
