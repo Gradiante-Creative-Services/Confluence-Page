@@ -1,0 +1,9 @@
+{
+  "name": "pr-review",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@octokit/rest": "^21.1.1"
+  }
+}

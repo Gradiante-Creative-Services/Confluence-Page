@@ -7,6 +7,7 @@ import { useAuth } from '../auth/AuthContext'
 import type { SidebarFilter } from '../types/artifact'
 import { ArtifactCard } from './ArtifactCard'
 import { ArtifactPanel } from './ArtifactPanel'
+import { ChatPanel } from './ChatPanel'
 import { NewArtifactModal } from './NewArtifactModal'
 import { Sidebar } from './Sidebar'
 import { StatusBar } from './StatusBar'
@@ -27,8 +28,13 @@ export function ArtifactHub() {
   const [creating, setCreating] = useState(false)
   const [createError, setCreateError] = useState<string | null>(null)
   const [reloadToken, setReloadToken] = useState(0)
+  const [chatOpen, setChatOpen] = useState(false)
 
   const canManage = session ? can(session.user.role, 'artifacts:manage') : false
+  const canAsk = session ? can(session.user.role, 'chat:ask') : false
+  const selectedArtifact = selectedId
+    ? artifacts.find((artifact) => artifact.id === selectedId) ?? null
+    : null
 
   useEffect(() => {
     const controller = new AbortController()
@@ -114,11 +120,18 @@ export function ArtifactHub() {
           <div className="page-head">
             <div className="page-head-row">
               <h1>Confluence Page</h1>
-              {canManage && (
-                <button type="button" className="btn-admin" onClick={() => setModalOpen(true)}>
-                  New artifact
-                </button>
-              )}
+              <div className="page-head-actions">
+                {canAsk && (
+                  <button type="button" className="btn-admin" onClick={() => setChatOpen(true)}>
+                    Ask docs
+                  </button>
+                )}
+                {canManage && (
+                  <button type="button" className="btn-admin" onClick={() => setModalOpen(true)}>
+                    New artifact
+                  </button>
+                )}
+              </div>
             </div>
             <p>
               Program deliverables for the AI for Developers cohort. Browse folders
@@ -170,6 +183,15 @@ export function ArtifactHub() {
         onClose={() => setModalOpen(false)}
         onSubmit={handleCreate}
       />
+
+      {canAsk && (
+        <ChatPanel
+          open={chatOpen}
+          onClose={() => setChatOpen(false)}
+          selectedArtifactId={selectedId}
+          selectedArtifactName={selectedArtifact?.name ?? null}
+        />
+      )}
     </>
   )
 }

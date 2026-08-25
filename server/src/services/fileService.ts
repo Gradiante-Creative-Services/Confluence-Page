@@ -12,6 +12,7 @@ const ALLOWED_EXTENSIONS = new Set([
   '.md',
   '.txt',
   '.pdf',
+  '.docx',
   '.png',
   '.jpg',
   '.jpeg',

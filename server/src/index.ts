@@ -21,6 +21,8 @@ const app = createApp({
   db,
   jwtSecret: config.jwtSecret,
   uploadDir: config.uploadDir,
+  geminiApiKey: config.geminiApiKey,
+  backfillIngestOnStart: true,
 })
 
 app.listen(config.port, () => {

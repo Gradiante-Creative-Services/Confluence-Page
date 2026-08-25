@@ -1,6 +1,10 @@
 export type ApiMode = 'mock' | 'live'
 export type Role = 'admin' | 'member'
-export type Permission = 'artifacts:read' | 'artifacts:manage' | 'uploads:create'
+export type Permission =
+  | 'artifacts:read'
+  | 'artifacts:manage'
+  | 'uploads:create'
+  | 'chat:ask'
 
 export interface AuthUser {
   id: string

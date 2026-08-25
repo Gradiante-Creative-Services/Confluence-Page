@@ -48,6 +48,12 @@ Seeded hub cards (with sample files): BRD, Architecture, RACI (`docs/RACI/`), an
 | `npm run test:smoke` | Login → create → upload → download → delete |
 | `npm run test:all` | Frontend + server tests |
 
+## Ask docs (RAG chatbot)
+
+Set `GEMINI_API_KEY` in `.env` (see `.env.example`). Without it, the API boots but ingest/chat return 503. Embeddings use `gemini-embedding-001`; chat uses `gemini-flash-lite-latest`.
+
+Upload `.txt`, `.md`, `.pdf`, or `.docx` to an artifact — indexing starts automatically. Open **Ask docs** in the hub to ask questions grounded in those files. When an artifact is selected, you can scope answers to that artifact only.
+
 ## API
 
 Versioned at `/api/v1`. Contract: [server/openapi.yaml](server/openapi.yaml).

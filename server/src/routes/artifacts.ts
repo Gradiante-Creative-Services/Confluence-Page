@@ -5,6 +5,7 @@ import { createAuthMiddleware, getActor, requirePermission } from '../middleware
 import type { AuthService } from '../services/authService.ts'
 import type { ArtifactService } from '../services/artifactService.ts'
 import type { FileService } from '../services/fileService.ts'
+import type { IngestionService } from '../services/ingestionService.ts'
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -15,6 +16,7 @@ export function createArtifactRouter(
   auth: AuthService,
   artifacts: ArtifactService,
   files: FileService,
+  ingestion?: IngestionService,
 ): Router {
   const router = Router()
   const requireAuth = createAuthMiddleware(auth)
@@ -113,6 +115,9 @@ export function createArtifactRouter(
     (req, res, next) => {
       try {
         const created = files.create(routeParam(req.params.id), getActor(res), req.file)
+        if (ingestion) {
+          void ingestion.enqueueAfterUpload(created.id, created.originalName)
+        }
         res.setHeader('Location', `/api/v1/artifacts/${req.params.id}/files/${created.id}`)
         sendData(res, created, 201)
       } catch (error) {

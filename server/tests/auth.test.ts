@@ -96,7 +96,11 @@ describe('auth API', () => {
     })
     expect(response.body.data.user.id).toEqual(expect.any(String))
     expect(response.body.data.token).toEqual(expect.any(String))
-    expect(response.body.data.permissions).toEqual(['artifacts:read', 'uploads:create'])
+    expect(response.body.data.permissions).toEqual([
+      'artifacts:read',
+      'uploads:create',
+      'chat:ask',
+    ])
     expect(JSON.stringify(response.body)).not.toMatch(/password/i)
   })
 

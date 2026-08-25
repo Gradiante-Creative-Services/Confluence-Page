@@ -28,12 +28,14 @@ function mapFile(row: FileRow): FileRecord {
 }
 
 export function createFileRepository(db: SqliteDatabase) {
+  const findByPrimaryKeyStmt = db.prepare('SELECT * FROM artifact_files WHERE id = ?')
   const findByIdStmt = db.prepare(
     'SELECT * FROM artifact_files WHERE id = ? AND artifact_id = ?',
   )
   const listStmt = db.prepare(
     'SELECT * FROM artifact_files WHERE artifact_id = ? ORDER BY created_at ASC LIMIT ? OFFSET ?',
   )
+  const listAllStmt = db.prepare('SELECT * FROM artifact_files ORDER BY created_at ASC')
   const countStmt = db.prepare(
     'SELECT COUNT(*) AS total FROM artifact_files WHERE artifact_id = ?',
   )
@@ -50,6 +52,10 @@ export function createFileRepository(db: SqliteDatabase) {
   const deleteStmt = db.prepare('DELETE FROM artifact_files WHERE id = ? AND artifact_id = ?')
 
   return {
+    findByPrimaryKey(fileId: string): FileRecord | null {
+      const row = findByPrimaryKeyStmt.get(fileId) as FileRow | undefined
+      return row ? mapFile(row) : null
+    },
     findById(artifactId: string, fileId: string): FileRecord | null {
       const row = findByIdStmt.get(fileId, artifactId) as FileRow | undefined
       return row ? mapFile(row) : null
@@ -60,6 +66,9 @@ export function createFileRepository(db: SqliteDatabase) {
     },
     list(artifactId: string, limit: number, offset: number): FileRecord[] {
       return (listStmt.all(artifactId, limit, offset) as FileRow[]).map(mapFile)
+    },
+    listAll(): FileRecord[] {
+      return (listAllStmt.all() as FileRow[]).map(mapFile)
     },
     count(artifactId: string): number {
       return (countStmt.get(artifactId) as { total: number }).total

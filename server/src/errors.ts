@@ -33,3 +33,7 @@ export function notFound(resource: string, id?: string): HttpError {
 export function conflict(message: string): HttpError {
   return new HttpError(409, 'conflict', message)
 }
+
+export function serviceUnavailable(message: string): HttpError {
+  return new HttpError(503, 'service_unavailable', message)
+}

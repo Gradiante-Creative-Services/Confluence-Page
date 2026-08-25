@@ -62,3 +62,32 @@ export const STATUS_LABELS: Record<ArtifactStatus, string> = {
   in_review: 'In review',
   final: 'Final',
 }
+
+export interface ChatSource {
+  fileId: string
+  artifactId: string
+  filename: string
+  chunkIndex: number
+  content: string
+  score: number
+}
+
+export interface ChatResponse {
+  answer: string
+  sources: ChatSource[]
+  conversationId?: string
+}
+
+export interface SendChatMessageInput {
+  message: string
+  artifactIds?: string[]
+  conversationId?: string
+}
+
+export type IngestStatus = 'pending' | 'processing' | 'done' | 'failed'
+
+export interface IngestJobStatus {
+  status: IngestStatus
+  chunkCount: number
+  errorMessage?: string | null
+}

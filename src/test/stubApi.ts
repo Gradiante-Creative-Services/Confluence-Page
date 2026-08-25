@@ -77,8 +77,8 @@ function publicUser(email: string) {
 
 function permissions(role: string) {
   return role === 'admin'
-    ? ['artifacts:read', 'artifacts:manage', 'uploads:create']
-    : ['artifacts:read', 'uploads:create']
+    ? ['artifacts:read', 'artifacts:manage', 'uploads:create', 'chat:ask']
+    : ['artifacts:read', 'uploads:create', 'chat:ask']
 }
 
 export function stubConfluenceApi() {
@@ -290,6 +290,58 @@ export function stubConfluenceApi() {
       }
       details.set(created.id, detail)
       return json(201, { data: detail })
+    }
+
+    if (url.endsWith('/api/v1/chat') && method === 'POST') {
+      const body = JSON.parse(String(init?.body ?? '{}')) as {
+        message?: string
+        artifactIds?: string[]
+        conversationId?: string
+      }
+      const message = body.message?.trim() ?? ''
+      if (!message) {
+        return json(422, {
+          error: {
+            code: 'validation_error',
+            message: 'Validation failed',
+            details: [{ field: 'message', message: 'Message is required', code: 'too_small' }],
+          },
+        })
+      }
+      const scoped = body.artifactIds?.[0]
+      const filename =
+        scoped === SEED_BRD.id
+          ? 'scope.md'
+          : scoped === SEED_ARCH.id
+            ? 'overview.md'
+            : 'scope.md'
+      return json(200, {
+        data: {
+          answer: `Stub answer for: ${message}`,
+          sources: [
+            {
+              fileId: 'file-stub',
+              artifactId: scoped ?? SEED_BRD.id,
+              filename,
+              chunkIndex: 0,
+              content: 'Relevant excerpt from uploaded documents.',
+              score: 0.88,
+            },
+          ],
+          conversationId: body.conversationId ?? 'conv-stub-1',
+        },
+      })
+    }
+
+    const ingestMatch = url.match(/\/api\/v1\/rag\/ingest\/([^/?]+)\/status$/)
+    if (ingestMatch && method === 'GET') {
+      return json(200, {
+        data: {
+          status: 'done',
+          chunkCount: 3,
+          errorMessage: null,
+        },
+      })
     }
 
     return json(404, { error: { code: 'not_found', message: url } })
